@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Seedance Premium | Elevate Your New Tab</title>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+      <style>
+                :root {
+                              --bg: #001a09;
+                              --accent: #adff2f;
+                              --accent-glow: rgba(173, 255, 47, 0.4);
+                              --glass: rgba(255, 255, 255, 0.03);
+                              --glass-border: rgba(255, 255, 255, 0.08);
+                }
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                body {
+                              background: var(--bg);
+                              color: #fff;
+                              font-family: 'Inter', sans-serif;
+                              overflow-x: hidden;
+                              min-height: 100vh;
+                }
+                #particle-canvas {
+                              position: fixed;
+                              top: 0;
+                              left: 0;
+                              width: 100%;
+                              height: 100%;
+                              z-index: 0;
+                              pointer-events: none;
+                }
+                .container {
+                              position: relative;
+                              z-index: 10;
+                              max-width: 1200px;
+                              margin: 0 auto;
+                              padding: 80px 20px;
+                              text-align: center;
+                }
+                .hero {
+                              padding: 100px 0;
+                }
+                .logo {
+                              font-size: 4rem;
+                              font-weight: 700;
+                              letter-spacing: -2px;
+                              margin-bottom: 20px;
+                              display: inline-block;
+                              background: linear-gradient(135deg, #fff, var(--accent));
+                              -webkit-background-clip: text;
+                              -webkit-text-fill-color: transparent;
+                              text-shadow: 0 0 30px var(--accent-glow);
+                }
+                .tagline {
+                              font-size: 1.5rem;
+                              font-weight: 300;
+                              color: rgba(255,255,255,0.7);
+                              margin-bottom: 40px;
+                }
+                .cta-button {
+                              display: inline-block;
+                              padding: 18px 40px;
+                              background: var(--accent);
+                              color: #000;
+                              text-decoration: none;
+                              font-weight: 700;
+                              border-radius: 50px;
+                              transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                              box-shadow: 0 10px 40px var(--accent-glow);
+                }
+                .cta-button:hover {
+                              transform: scale(1.05) translateY(-5px);
+                              box-shadow: 0 20px 60px var(--accent-glow);
+                }
+                .features {
+                              display: grid;
+                              grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                              gap: 30px;
+                              margin-top: 100px;
+                }
+                .card {
+                              background: var(--glass);
+                              backdrop-filter: blur(20px);
+                              border: 1px solid var(--glass-border);
+                              padding: 40px;
+                              border-radius: 24px;
+                              text-align: left;
+                              transition: transform 0.3s ease;
+                }
+                .card:hover { transform: translateY(-10px); }
+                .card h3 { color: var(--accent); margin-bottom: 15px; font-size: 1.5rem; }
+                .card p { color: rgba(255,255,255,0.6); line-height: 1.6; }
+            </style>
+  </head>
+  <body>
+        <canvas id="particle-canvas"></canvas>canvas>
+        <div class="container">
+                  <header class="hero">
+                                <h1 class="logo">Seedance</h1>h1>
+                                <p class="tagline">Experience the fusion of deep nature and high-tech productivity.</p>p>
+                                <a href="https://chrome.google.com/webstore" class="cta-button">Add to Chrome - It's Free</a>a>
+                  </header>header>
+                  <div class="features">
+                                <div class="card">
+                                                  <h3>Living Canvas</h3>
+                                                <p>Interactive 60 FPS particle engine that reacts to your presence. Seeds dance around your cursor in real-time.</p>
+                                </div>div>
+                              <div class="card">
+                                              <h3>Glassmorphic Peak</h3>
+                                              <p>Stunning frosted-glass UI with multi-layered translucency and high-fidelity focus on minimalism.</p>
+                              </div>div>
+                              <div class="card">
+                                              <h3>Privacy First</h3>
+                                              <p>No tracking, no ads. Just a pure, high-performance dashboard designed for your daily workflow.</p>
+                              </div>div>
+                  </div>div>
+        </div>div>
+      <script>
+                const canvas = document.getElementById('particle-canvas');
+                const ctx = canvas.getContext('2d');
+                let particles = [];
+                const mouse = { x: null, y: null, radius: 150 };
+
+                window.addEventListener('pointermove', e => { mouse.x = e.x; mouse.y = e.y; });
+                window.addEventListener('resize', init);
+
+                class Particle {
+                              constructor() {
+                                                this.init();
+                              }
+                              init() {
+                                                this.x = Math.random() * canvas.width;
+                                                this.y = Math.random() * canvas.height;
+                                                this.size = Math.random() * 2 + 1;
+                                                this.baseX = this.x;
+                                                this.baseY = this.y;
+                                                this.density = (Math.random() * 30) + 1;
+                              }
+                              draw() {
+                                                ctx.fillStyle = '#adff2f';
+                                                ctx.beginPath();
+                                                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                                                ctx.closePath();
+                                                ctx.fill();
+                              }
+                              update() {
+                                                let dx = mouse.x - this.x;
+                                                let dy = mouse.y - this.y;
+                                                let distance = Math.sqrt(dx * dx + dy * dy);
+                                                let forceDirectionX = dx / distance;
+                                                let forceDirectionY = dy / distance;
+                                                let maxDistance = mouse.radius;
+                                                let force = (maxDistance - distance) / maxDistance;
+                                                let directionX = forceDirectionX * force * this.density;
+                                                let directionY = forceDirectionY * force * this.density;
+
+                                                if (distance < mouse.radius) {
+                                                                      this.x -= directionX;
+                                                                      this.y -= directionY;
+                                                } else {
+                                                                      if (this.x !== this.baseX) {
+                                                                                                let dx = this.x - this.baseX;
+                                                                                                this.x -= dx / 10;
+                                                                      }
+                                                                      if (this.y !== this.baseY) {
+                                                                                                let dy = this.y - this.baseY;
+                                                                                                this.y -= dy / 10;
+                                                                      }
+                                                }
+                              }
+                }
+
+                function init() {
+                              canvas.width = window.innerWidth;
+                              canvas.height = window.innerHeight;
+                              particles = [];
+                              let numberOfParticles = (canvas.width * canvas.height) / 10000;
+                              for (let i = 0; i < numberOfParticles; i++) {
+                                                particles.push(new Particle());
+                              }
+                }
+
+                function animate() {
+                              ctx.clearRect(0, 0, canvas.width, canvas.height);
+                              for (let i = 0; i < particles.length; i++) {
+                                                particles[i].draw();
+                                                particles[i].update();
+                              }
+                              requestAnimationFrame(animate);
+                }
+
+                init();
+                animate();
+      </script>
+  </body>
+</html>html>
+
+      </script></p></p></h3>
+  </body>
+      </style></title>
+  </head>
